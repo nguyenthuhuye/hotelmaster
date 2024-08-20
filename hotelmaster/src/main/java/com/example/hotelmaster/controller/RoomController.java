@@ -1,8 +1,8 @@
 package com.example.hotelmaster.controller;
 
-import com.example.hotelmaster.dto.request.BookingRequest;
+import com.example.hotelmaster.constant.RoomStatus;
+import com.example.hotelmaster.constant.RoomType;
 import com.example.hotelmaster.dto.request.RoomRequest;
-import com.example.hotelmaster.entity.Booking;
 import com.example.hotelmaster.entity.Room;
 import com.example.hotelmaster.service.RoomService;
 import lombok.AccessLevel;
@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/room")
@@ -22,32 +21,50 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @Slf4j
 public class RoomController {
 
-    RoomService roomServicel;
+    RoomService roomService;
 
     @PostMapping
     Room createRoom(@RequestBody RoomRequest request) {
-        return roomServicel.createRoom(request);
+        return roomService.createRoom(request);
     }
 
 
     @GetMapping
     List<Room> getAllRoom() {
-        return roomServicel.getAllRoom();
+        return roomService.getAllRoom();
     }
 
     @GetMapping("/{Id}")
     Room getRoom(@PathVariable("Id") String Id) {
-        return roomServicel.getRoom(Id);
+        return roomService.getRoom(Id);
     }
 
     @PutMapping("/{Id}")
     Room updateRoom(@PathVariable String Id, @RequestBody RoomRequest request) {
-        return roomServicel.updateRoom(Id, request);
+        return roomService.updateRoom(Id, request);
     }
 
     @DeleteMapping("/{Id}")
     String deleteRoom(@PathVariable String Id) {
-        roomServicel.deleteRoom(Id);
+        roomService.deleteRoom(Id);
         return "Room deleted";
     }
+
+//    @GetMapping("/{AvailableRooms}")
+//    List<Room> getAvailableRooms(@PathVariable String roomTypes, LocalDate checkInDate, LocalDate checkOutDate) {
+//        return roomServicel.findAvailableRooms(roomTypes, checkInDate, checkOutDate);
+//    }
+
+//    @GetMapping("/available")
+//    public List<Room> getAvailableRooms(
+//            @RequestParam String roomType,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkIn,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOut) {
+//        return roomService.findAvailableRooms(roomType, checkIn, checkOut);
+//    }
+
+//    @GetMapping("/available")
+//    Optional<Room> getAvailableRoom(@RequestBody RoomType roomType, RoomStatus roomStatus) {
+//        return roomService.findRoom(roomType, roomStatus);
+//    }
 }

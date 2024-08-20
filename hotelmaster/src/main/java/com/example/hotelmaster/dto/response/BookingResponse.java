@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingResponse {
-    String id;
     String userId;
     String roomNumber;
     LocalDate checkInDate;

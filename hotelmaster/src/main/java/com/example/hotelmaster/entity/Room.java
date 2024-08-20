@@ -13,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "user")
+@Table(name = "room")
 @Data
 public class Room {
     @Id
@@ -23,4 +23,5 @@ public class Room {
     String imageUrl;
     RoomStatus roomStatus;
     RoomType roomType;
+//    String roomType;
 }

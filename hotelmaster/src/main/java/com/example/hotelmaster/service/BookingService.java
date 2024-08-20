@@ -4,6 +4,7 @@ import com.example.hotelmaster.dto.request.BookingRequest;
 import com.example.hotelmaster.dto.request.RoomRequest;
 import com.example.hotelmaster.entity.Booking;
 import com.example.hotelmaster.entity.Room;
+import com.example.hotelmaster.entity.User;
 import com.example.hotelmaster.mapper.BookingMapper;
 import com.example.hotelmaster.repository.BookingRepository;
 import lombok.AccessLevel;
@@ -25,7 +26,6 @@ public class BookingService {
     public Booking createBooking(BookingRequest request) {
 
         Booking booking = bookingMapper.toBooking(request);
-
         return bookingRepository.save(booking);
     }
 

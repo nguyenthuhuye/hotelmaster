@@ -10,7 +10,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RoomResponse {
+public class FindRoomResponse {
+    String id;
     String roomNumber;
     String imageUrl;
     RoomStatus roomStatus;
