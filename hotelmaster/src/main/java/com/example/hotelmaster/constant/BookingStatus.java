@@ -1,13 +1,7 @@
 package com.example.hotelmaster.constant;
 
 public enum BookingStatus {
-    CONFIRMED,
+    BOOKED,
     CANCELLED,
-    COMPLETED,
-    AVAILABLE,
-    RESERVED,
-
-    PENDING,
-    CHECKED_IN,
-    CHECKED_OUT,
+    COMPLETED
 }

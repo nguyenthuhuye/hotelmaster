@@ -14,40 +14,14 @@ import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, String> {
-//    @Query("SELECT DISTINCT r.roomType FROM Room r")
-//    List<String> findRoomTypes();
-//
-//    @Query("SELECT r FROM Room r " +
-//            "WHERE r.roomTypes LIKE %:roomTypes% " +
-//            "AND r.id NOT IN (" +
-//            "    SELECT br.room.id FROM booking br " +
-//            "    WHERE br.checkInDate <= :checkOut AND br.checkOutDate >= :checkIn" +
-//            ")")
-//    List<Room> findAvailableRooms(
-//            @Param("checkIn") LocalDate checkInDate,
-//            @Param("checkOut") LocalDate checkOutDate,
-//            @Param("roomType") String roomType
-//    );
-//    @Query("SELECT DISTINCT r.roomType FROM Room r")
-//    List<String> findRoomTypes();
-//
-//
-//    @Query("SELECT r FROM Room r WHERE r.roomType = :roomType AND " +
-//            "NOT EXISTS (SELECT b FROM Booking b WHERE b.roomNumber = r AND " +
-//            "(:checkInDate < b.checkOutDate AND :checkOutDate > b.checkInDate))")
-//    List<Room> findAvailableRoomsByTypeAndDate(
-//            @Param("roomTypes") String roomTypes,
-//            @Param("checkInDate") LocalDate checkInDate,
-//            @Param("checkOutDate") LocalDate checkOutDate);
 
-//    @Query("SELECT r FROM Room r WHERE r.roomType = :roomType " +
-//            "AND NOT EXISTS (SELECT b FROM Booking b WHERE b.roomNumber = r " +
-//            "AND (:checkInDate < b.checkOutDate AND :checkOutDate > b.checkInDate))")
-//    List<Room> findAvailableRoomsByTypeAndDate(
-//            @Param("roomType") String roomType,
-//            @Param("checkInDate") LocalDate checkInDate,
-//            @Param("checkOutDate") LocalDate checkOutDate
-//    );
+//    @Query("SELECT distinct r.roomType FROM Room r")
+//    List<RoomType> findRoomTypes();
 //
-//    Optional<Room> findByRoomTypeAnAndRoomStatus(RoomType roomType, RoomStatus roomStatus);
+//    @Query("SELECT room_number FROM room r "+
+//    "where r.room_type LIKE %:roomType% "+
+//    "and r.room_number NOT IN ("+
+//    "select br.room_number FROM booking br "+
+//    "WHERE ((br.check_in_date <= :checkOutDate ) And (br.check_out_date >= :checkInDate))")
+//    List<Room> findAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, String roomType);
 }
