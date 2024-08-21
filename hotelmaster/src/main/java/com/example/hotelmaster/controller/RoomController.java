@@ -19,6 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+//@CrossOrigin(origins = "*")
 public class RoomController {
 
     RoomService roomService;
