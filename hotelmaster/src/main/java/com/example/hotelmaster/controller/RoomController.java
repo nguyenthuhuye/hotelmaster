@@ -9,8 +9,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +21,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-//@CrossOrigin(origins = "*")
 public class RoomController {
+
 
     RoomService roomService;
 
@@ -68,4 +70,13 @@ public class RoomController {
 //    Optional<Room> getAvailableRoom(@RequestBody RoomType roomType, RoomStatus roomStatus) {
 //        return roomService.findRoom(roomType, roomStatus);
 //    }
+
+    @GetMapping("/available-in-range")
+    public ResponseEntity<List<Room>> getAvailableRoomsInDateRange(@RequestParam("startDate") String startDate,
+                                                                   @RequestParam("endDate") String endDate) {
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+        List<Room> availableRooms = roomService.getAvailableRoomsInDateRange(start, end);
+        return ResponseEntity.ok(availableRooms);
+    }
 }
