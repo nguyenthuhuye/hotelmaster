@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,11 +32,7 @@ public class User {
     String password;
     String username;
     Role role;
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<Booking> bookings;
-//
-//    public enum Role {
-//        MANA, ADMIN, USER
-//    }
+
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Booking> bookings = new HashSet<>();
 }

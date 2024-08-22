@@ -1,9 +1,11 @@
 package com.example.hotelmaster.controller;
 
+import com.example.hotelmaster.dto.request.ApiResponse;
 import com.example.hotelmaster.dto.request.UserCreationRequest;
 import com.example.hotelmaster.dto.request.UserUpdateRequest;
 import com.example.hotelmaster.entity.User;
 import com.example.hotelmaster.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,10 +27,20 @@ public class UserController {
     User createUser(@RequestBody UserCreationRequest request) {
         return userService.createUser(request);
     }
+//    User createUser(@RequestBody @Valid UserCreationRequest request) {
+//        return userService.createUser(request);
+//    }
+
+//    @PostMapping
+//    ApiResponse<User> createUser (@RequestBody UserCreationRequest request){
+//        ApiResponse<User> apiResponse = new ApiResponse<>();
+//        apiResponse.setResult(userService.createUser(request));
+//        return apiResponse;
+//    }
 
     @PostMapping("/admin")
     User createAdmin(@RequestBody UserCreationRequest request) {
-        return userService.createUser(request);
+        return userService.createAdmin(request);
     }
 
     @GetMapping
@@ -48,7 +60,7 @@ public class UserController {
 
     @PutMapping("/admin/{userId}")
     User updateAdmin(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
-        return userService.updateUser(userId, request);
+        return userService.updateAdmin(userId, request);
     }
 
     @DeleteMapping("/{userId}")

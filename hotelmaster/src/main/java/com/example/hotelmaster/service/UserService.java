@@ -4,12 +4,16 @@ import com.example.hotelmaster.constant.Role;
 import com.example.hotelmaster.dto.request.UserCreationRequest;
 import com.example.hotelmaster.dto.request.UserUpdateRequest;
 import com.example.hotelmaster.entity.User;
+import com.example.hotelmaster.exception.AppException;
+import com.example.hotelmaster.exception.ErrorCode;
 import com.example.hotelmaster.mapper.UserMapper;
 import com.example.hotelmaster.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,14 +32,19 @@ public class UserService {
 
     public User createUser(UserCreationRequest request) {
         User user = new User();
+
+        if (userRepository.existsByUsername(request.getUsername()))
+            throw new AppException(ErrorCode.USER_EXISTED);
+
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
+//        user.setPassword(request.getPassword());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setRole(Role.ROLE_USER);
-
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 //        User user = userMapper.toUser(request);
         return userRepository.save(user);
     }
@@ -43,7 +52,8 @@ public class UserService {
     public User createAdmin(UserCreationRequest request) {
         User user = new User();
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setFirstName(request.getFirstName());
