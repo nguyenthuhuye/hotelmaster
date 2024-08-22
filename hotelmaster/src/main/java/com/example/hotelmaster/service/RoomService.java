@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,4 +59,8 @@ public class RoomService {
 //    public Optional<Room> findRoom(RoomType roomType, RoomStatus roomStatus){
 //        return roomRepository.findByRoomTypeAnAndRoomStatus(roomType, roomStatus);
 //    }
+
+    public List<Room> getAvailableRoomsInDateRange(LocalDate startDate, LocalDate endDate) {
+        return roomRepository.findAvailableRoomsInDateRange(startDate, endDate);
+    }
 }
