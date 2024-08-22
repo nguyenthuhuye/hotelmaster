@@ -23,7 +23,9 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final String[] PUBLIC_ENDPOINTS = {"/users",
+    private final String[] PUBLIC_ENDPOINTS = {"/users","/booking","/booking/{Id}","/users/{userId}",
+            "/users/{userId}","/users/admin/{userId}","/users/admin/",
+            "/roomtypes","/roomtypes/{Id}",
             "/auth/token", "/auth/introspect","/room","/room/{Id}","/room/available-in-range"
     };
 
