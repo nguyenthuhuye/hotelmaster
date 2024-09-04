@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class RoomController {
+
 
     RoomService roomService;
 
@@ -55,4 +57,13 @@ public class RoomController {
 //            @RequestParam("endDate") LocalDate endDate) {
 //        return roomService.findAvailableRooms(startDate, endDate);
 //    }
+
+    @GetMapping("/available-in-range")
+    public ResponseEntity<List<Room>> getAvailableRoomsInDateRange(@RequestParam("startDate") String startDate,
+                                                                   @RequestParam("endDate") String endDate) {
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+        List<Room> availableRooms = roomService.getAvailableRoomsInDateRange(start, end);
+        return ResponseEntity.ok(availableRooms);
+    }
 }

@@ -71,4 +71,8 @@ public class RoomService {
 //
 //        return availableRooms;
 //    }
+
+    public List<Room> getAvailableRoomsInDateRange(LocalDate startDate, LocalDate endDate) {
+        return roomRepository.findAvailableRoomsInDateRange(startDate, endDate);
+    }
 }
