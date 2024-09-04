@@ -33,6 +33,6 @@ public class User {
     String username;
     Role role;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Booking> bookings = new HashSet<>();
+    @OneToMany(mappedBy = "username", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<Booking> bookings = new HashSet<>();
 }

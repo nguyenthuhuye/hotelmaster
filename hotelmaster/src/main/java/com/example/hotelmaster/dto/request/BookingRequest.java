@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingRequest {
+    String username;
     String roomNumber;
     LocalDate checkInDate;
     LocalDate checkOutDate;

@@ -40,7 +40,7 @@ public class BookingService {
     }
 
     public Booking updateBooking(String id, BookingRequest request) {
-
+//        Booking booking = getBooking(id);
         Booking booking = bookingMapper.toBooking(request);
         return bookingRepository.save(booking);
     }

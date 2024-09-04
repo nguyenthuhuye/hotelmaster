@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/roomtype")
+@RequestMapping("/roomtypes")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
@@ -25,7 +25,6 @@ public class RoomTypesController {
     RoomTypes createRoomTypes(@RequestBody RoomTypesRequest request) {
         return roomTypesService.createRoomtypes(request);
     }
-
 
     @GetMapping
     List<RoomTypes> getAllRoomTypes() {

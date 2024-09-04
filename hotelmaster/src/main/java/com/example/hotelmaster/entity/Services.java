@@ -1,30 +1,28 @@
 package com.example.hotelmaster.entity;
 
-import com.example.hotelmaster.constant.BookingStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.apache.poi.hpsf.Decimal;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "Booking")
+@Table(name = "service")
 @Data
-public class Booking {
+public class Services {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-    String username;
-    String roomNumber;
-    LocalDate checkInDate;
-    LocalDate checkOutDate;
-    Integer totalPrice;
-    BookingStatus bookingStatus;
-//    String bookingStatus;
+
+    String serviceName;
+    String description;
+    BigDecimal price;
 }

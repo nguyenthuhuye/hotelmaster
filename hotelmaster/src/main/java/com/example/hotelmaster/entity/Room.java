@@ -25,7 +25,9 @@ public class Room {
     String roomNumber;
     String imageUrl;
     RoomStatus roomStatus;
+//    String roomStatus;
     RoomType roomType;
+//    String roomType;
 //    String roomType;
     @OneToMany(mappedBy = "roomNumber", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<Booking> bookings = new HashSet<>();

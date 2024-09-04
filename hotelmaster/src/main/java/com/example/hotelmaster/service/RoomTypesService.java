@@ -3,6 +3,7 @@ package com.example.hotelmaster.service;
 
 import com.example.hotelmaster.dto.request.RoomTypesRequest;
 import com.example.hotelmaster.entity.RoomTypes;
+import com.example.hotelmaster.entity.User;
 import com.example.hotelmaster.mapper.RoomTypesMapper;
 import com.example.hotelmaster.repository.RoomTypesRepository;
 import lombok.AccessLevel;
@@ -39,8 +40,8 @@ public class RoomTypesService {
     }
 
     public RoomTypes updateRoomTypes(String id, RoomTypesRequest request) {
-
-        RoomTypes roomTypes = roomTypesMapper.toRoomTypes(request);
+        RoomTypes roomTypes = getRoomTypes(id);
+        roomTypes = roomTypesMapper.toRoomTypes(request);
         return roomTypesRepository.save(roomTypes);
     }
 
