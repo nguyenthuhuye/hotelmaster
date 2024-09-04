@@ -1,6 +1,6 @@
 package com.example.hotelmaster.entity;
 
-import com.example.hotelmaster.constant.RoomType;
+import com.example.hotelmaster.constant.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,20 +17,20 @@ import java.util.Set;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "roomTypes")
+@Table(name = "payment")
 @Data
-public class RoomTypes {
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    RoomType roomType;
-    String description;
-    //Sức chứa
-    BigDecimal price;
-    //Giá mỗi đêm
 
-    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    Set<Room> rooms = new HashSet<>();
-    Set<Room> rooms;
+    BigDecimal amount;
 
+    LocalDate paymentDate;
+
+    PaymentMethod paymentMethod;
+
+    @OneToOne
+    @JoinColumn(name = "booking_id")
+    Booking booking;
 }

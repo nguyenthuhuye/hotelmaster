@@ -1,20 +1,17 @@
 package com.example.hotelmaster.dto.request;
 
-
-import com.example.hotelmaster.constant.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.math.BigDecimal;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserUpdateRequest {
-    String fullName;
-    String email;
-    String phone;
-    String password;
-    String username;
-    Role role;
+public class ServicesRequest {
+    String serviceName;
+    String description;
+    BigDecimal price;
 }

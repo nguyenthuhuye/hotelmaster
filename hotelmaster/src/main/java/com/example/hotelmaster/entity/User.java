@@ -20,19 +20,19 @@ import java.util.Set;
 @Data
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 //    @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
 //    @Column(nullable = false)
-    String firstName;
+    String fullName;
 //    @Column(nullable = false)
-    String lastName;
+//    String lastName;
     String email;
     String phone;
     String password;
     String username;
     Role role;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Booking> bookings = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<Booking> bookings;
 }

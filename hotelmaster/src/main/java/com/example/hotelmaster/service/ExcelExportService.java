@@ -42,7 +42,7 @@ public class ExcelExportService {
 
                 row.createCell(0).setCellValue(booking.getId());
                 row.createCell(1).setCellValue(booking.getRoomNumber());
-                row.createCell(2).setCellValue(booking.getUserId());
+//                row.createCell(2).setCellValue(booking.getUserId());
                 row.createCell(3).setCellValue(booking.getCheckInDate().toString());
             }
 

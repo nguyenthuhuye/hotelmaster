@@ -1,7 +1,6 @@
 package com.example.hotelmaster.controller;
 
-import com.example.hotelmaster.constant.RoomStatus;
-import com.example.hotelmaster.constant.RoomType;
+import com.example.hotelmaster.dto.AvailableRoomDTO;
 import com.example.hotelmaster.dto.request.RoomRequest;
 import com.example.hotelmaster.entity.Room;
 import com.example.hotelmaster.service.RoomService;
@@ -11,15 +10,14 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/room")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-//@CrossOrigin(origins = "*")
 public class RoomController {
 
     RoomService roomService;
@@ -36,36 +34,25 @@ public class RoomController {
     }
 
     @GetMapping("/{Id}")
-    Room getRoom(@PathVariable("Id") String Id) {
+    Room getRoom(@PathVariable("Id") Long Id) {
         return roomService.getRoom(Id);
     }
 
     @PutMapping("/{Id}")
-    Room updateRoom(@PathVariable String Id, @RequestBody RoomRequest request) {
+    Room updateRoom(@PathVariable Long Id, @RequestBody RoomRequest request) {
         return roomService.updateRoom(Id, request);
     }
 
     @DeleteMapping("/{Id}")
-    String deleteRoom(@PathVariable String Id) {
+    String deleteRoom(@PathVariable Long Id) {
         roomService.deleteRoom(Id);
         return "Room deleted";
     }
 
-//    @GetMapping("/{AvailableRooms}")
-//    List<Room> getAvailableRooms(@PathVariable String roomTypes, LocalDate checkInDate, LocalDate checkOutDate) {
-//        return roomServicel.findAvailableRooms(roomTypes, checkInDate, checkOutDate);
-//    }
-
 //    @GetMapping("/available")
-//    public List<Room> getAvailableRooms(
-//            @RequestParam String roomType,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkIn,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOut) {
-//        return roomService.findAvailableRooms(roomType, checkIn, checkOut);
-//    }
-
-//    @GetMapping("/available")
-//    Optional<Room> getAvailableRoom(@RequestBody RoomType roomType, RoomStatus roomStatus) {
-//        return roomService.findRoom(roomType, roomStatus);
+//    public List<AvailableRoomDTO> getAvailableRooms(
+//            @RequestParam("startDate") LocalDate startDate,
+//            @RequestParam("endDate") LocalDate endDate) {
+//        return roomService.findAvailableRooms(startDate, endDate);
 //    }
 }

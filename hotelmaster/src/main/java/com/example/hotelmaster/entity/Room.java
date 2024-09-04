@@ -20,14 +20,14 @@ import java.util.Set;
 @Data
 public class Room {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
     String roomNumber;
     String imageUrl;
     RoomStatus roomStatus;
     RoomType roomType;
 //    String roomType;
-    @OneToMany(mappedBy = "roomNumber", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<Booking> bookings = new HashSet<>();
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<Booking> bookings;
 
 }

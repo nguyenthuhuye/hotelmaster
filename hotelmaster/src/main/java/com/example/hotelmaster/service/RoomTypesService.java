@@ -33,19 +33,22 @@ public class RoomTypesService {
         return roomTypesRepository.findAll();
     }
 
-    public RoomTypes getRoomTypes(String id) {
+    public RoomTypes getRoomTypes(Long id) {
         return roomTypesRepository.findById(id).
                 orElseThrow(() -> new RuntimeException("Room types not found"));
     }
 
-    public RoomTypes updateRoomTypes(String id, RoomTypesRequest request) {
+    public RoomTypes updateRoomTypes(Long id, RoomTypesRequest request) {
 
-        RoomTypes roomTypes = roomTypesMapper.toRoomTypes(request);
+        RoomTypes roomTypes = getRoomTypes(id);
+        roomTypes.setRoomType(request.getRoomType());
+        roomTypes.setDescription(request.getDescription());
+        roomTypes.setPrice(request.getPrice());
         return roomTypesRepository.save(roomTypes);
     }
 
 
-    public void deleteRoomTypes(String id) {
+    public void deleteRoomTypes(Long id) {
         roomTypesRepository.deleteById(id);
     }
 }

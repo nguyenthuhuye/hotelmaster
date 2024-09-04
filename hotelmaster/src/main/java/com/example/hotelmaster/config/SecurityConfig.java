@@ -11,9 +11,6 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Arrays;
@@ -54,7 +51,10 @@ public class SecurityConfig {
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 
-        return httpSecurity.build();
+        return httpSecurity.cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                // các cấu hình security khác
+                .build();
     }
 
     @Bean

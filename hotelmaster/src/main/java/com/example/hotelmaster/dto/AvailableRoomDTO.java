@@ -1,6 +1,5 @@
-package com.example.hotelmaster.dto.response;
+package com.example.hotelmaster.dto;
 
-import com.example.hotelmaster.constant.RoomType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,9 +10,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RoomTypesResponse {
-    RoomType roomType;
-    String description;
+public class AvailableRoomDTO {
+    Long roomId;
+    String roomNumber;
     BigDecimal price;
-    //Giá mỗi đêm
 }

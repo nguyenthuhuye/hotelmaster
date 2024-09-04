@@ -26,24 +26,23 @@ public class RoomTypesController {
         return roomTypesService.createRoomtypes(request);
     }
 
-
     @GetMapping
     List<RoomTypes> getAllRoomTypes() {
         return roomTypesService.getAllRoomTypes();
     }
 
     @GetMapping("/{Id}")
-    RoomTypes getRoomTypes(@PathVariable("Id") String Id) {
+    RoomTypes getRoomTypes(@PathVariable("Id") Long Id) {
         return roomTypesService.getRoomTypes(Id);
     }
 
     @PutMapping("/{Id}")
-    RoomTypes updateRoomTypes(@PathVariable String Id, @RequestBody RoomTypesRequest request) {
+    RoomTypes updateRoomTypes(@PathVariable Long Id, @RequestBody RoomTypesRequest request) {
         return roomTypesService.updateRoomTypes(Id, request);
     }
 
     @DeleteMapping("/{Id}")
-    String deleteRoom(@PathVariable String Id) {
+    String deleteRoom(@PathVariable Long Id) {
         roomTypesService.deleteRoomTypes(Id);
         return "RoomTypes deleted";
     }

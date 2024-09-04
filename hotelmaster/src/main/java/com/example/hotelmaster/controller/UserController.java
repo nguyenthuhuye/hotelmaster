@@ -49,22 +49,22 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    User getUser(@PathVariable("userId") String userId) {
+    User getUser(@PathVariable("userId") Long userId) {
         return userService.getUser(userId);
     }
 
     @PutMapping("/{userId}")
-    User updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+    User updateUser(@PathVariable Long userId, @RequestBody UserUpdateRequest request) {
         return userService.updateUser(userId, request);
     }
 
     @PutMapping("/admin/{userId}")
-    User updateAdmin(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+    User updateAdmin(@PathVariable Long userId, @RequestBody UserUpdateRequest request) {
         return userService.updateAdmin(userId, request);
     }
 
     @DeleteMapping("/{userId}")
-    String deleteUser(@PathVariable String userId) {
+    String deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return "User deleted";
     }

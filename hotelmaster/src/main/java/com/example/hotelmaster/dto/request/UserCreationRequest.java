@@ -14,8 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreationRequest {
 
-    String firstName;
-    String lastName;
+    String fullName;
 //    @Email(message = "")
     String email;
     String phone;

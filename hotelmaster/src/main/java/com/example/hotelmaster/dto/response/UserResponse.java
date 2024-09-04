@@ -12,9 +12,10 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
+    String fullName;
+    String email;
+    String phone;
+    String password;
     String username;
-    String firstName;
-    String lastName;
-    LocalDate dob;
     Role role;
 }

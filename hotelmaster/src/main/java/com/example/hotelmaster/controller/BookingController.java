@@ -33,10 +33,14 @@ public class BookingController {
 
     BookingRepository bookingRepository;
 
-    @PostMapping
-    Booking createBooking(@RequestBody BookingRequest request) {
-        return bookingService.createBooking(request);
-    }
+//    @PostMapping
+//    Booking createBooking(@RequestBody BookingRequest request) {
+//        return bookingService.createBooking(request);
+//    }
+@PostMapping
+Booking createBooking(@RequestBody BookingRequest request) {
+    return bookingService.createBooking(request);
+}
 
 
     @GetMapping
@@ -45,34 +49,21 @@ public class BookingController {
     }
 
     @GetMapping("/{Id}")
-    Booking getBooking(@PathVariable("Id") String Id) {
+    Booking getBooking(@PathVariable("Id") Long Id) {
         return bookingService.getBooking(Id);
     }
 
     @PutMapping("/{Id}")
-    Booking updateBooking(@PathVariable String Id, @RequestBody BookingRequest request) {
+    Booking updateBooking(@PathVariable Long Id, @RequestBody BookingRequest request) {
         return bookingService.updateBooking(Id, request);
     }
 
     @DeleteMapping("/{Id}")
-    String deleteUser(@PathVariable String Id) {
+    String deleteUser(@PathVariable Long Id) {
         bookingService.deleteBooking(Id);
         return "Booking deleted";
     }
 
-//    @GetMapping("/export")
-//    public ResponseEntity<byte[]> exportBookingsToExcel() throws IOException {
-//        List<Booking> bookings = bookingRepository.findAll();
-//        ByteArrayInputStream in = excelExportService.exportBookingsToExcel(bookings);
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add("Content-Disposition", "attachment; filename=bookings.xlsx");
-//
-//        return ResponseEntity.ok()
-//                .headers(headers)
-//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-//                .body(in.readAllBytes());
-//    }
 
     @GetMapping("/export")
     public ResponseEntity<byte[]> exportBookingsToExcel(
@@ -89,6 +80,14 @@ public class BookingController {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(in.readAllBytes());
+    }
+
+    @PostMapping("/{bookingId}/add-services")
+    public ResponseEntity<Booking> addServicesToBooking(
+            @PathVariable Long bookingId,
+            @RequestBody List<Long> serviceIds) {
+        Booking booking = bookingService.createBookingWithServices(bookingId, serviceIds);
+        return ResponseEntity.ok(booking);
     }
 
 }

@@ -40,8 +40,7 @@ public class UserService {
 //        user.setPassword(request.getPassword());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        user.setFullName(request.getFullName());
         user.setRole(Role.ROLE_USER);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -56,8 +55,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        user.setFullName(request.getFullName());
         user.setRole(Role.ROLE_ADMIN);
 
 //        User user = userMapper.toUser(request);
@@ -68,40 +66,38 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUser(String id) {
+    public User getUser(Long id) {
         return userRepository.findById(id).
                 orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public User updateUser(String userId, UserUpdateRequest request) {
+    public User updateUser(Long userId, UserUpdateRequest request) {
         User user = getUser(userId);
 
         user.setUsername(request.getUsername());
         user.setPassword(request.getPassword());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        user.setFullName(request.getFullName());
         user.setRole(Role.ROLE_USER);
         return userRepository.save(user);
 
     }
 
-    public User updateAdmin(String userId, UserUpdateRequest request) {
+    public User updateAdmin(Long userId, UserUpdateRequest request) {
         User user = getUser(userId);
 
         user.setUsername(request.getUsername());
         user.setPassword(request.getPassword());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        user.setFullName(request.getFullName());
         user.setRole(Role.ROLE_ADMIN);
         return userRepository.save(user);
 
     }
 
-    public void deleteUser(String userId) {
+    public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
 
