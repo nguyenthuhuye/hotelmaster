@@ -30,7 +30,7 @@ public class RoomService {
     public Room createRoom(RoomRequest request) {
 
         Room room = roomMaper.toRoom(request);
-
+        room.setRoomStatus(RoomStatus.AVAILABLE);
         return roomRepository.save(room);
     }
 

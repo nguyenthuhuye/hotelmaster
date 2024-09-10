@@ -22,11 +22,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-//    @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
-//    @Column(nullable = false)
     String fullName;
-//    @Column(nullable = false)
-//    String lastName;
     String email;
     String phone;
     String password;

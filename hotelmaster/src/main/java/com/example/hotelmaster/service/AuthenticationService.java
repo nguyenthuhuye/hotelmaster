@@ -1,32 +1,23 @@
 package com.example.hotelmaster.service;
 
+import com.example.hotelmaster.constant.Role;
 import com.example.hotelmaster.dto.request.AuthenticationRequest;
-import com.example.hotelmaster.dto.request.IntrospectRequest;
+import com.example.hotelmaster.dto.request.UserCreationRequest;
 import com.example.hotelmaster.dto.response.AuthenticationResponse;
-import com.example.hotelmaster.dto.response.IntrospectResponse;
+import com.example.hotelmaster.dto.response.UserCreationResponse;
+import com.example.hotelmaster.entity.User;
 import com.example.hotelmaster.exception.AppException;
 import com.example.hotelmaster.exception.ErrorCode;
 import com.example.hotelmaster.repository.UserRepository;
-import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
+import static com.example.hotelmaster.constant.Role.ROLE_USER;
 
 @Service
 @RequiredArgsConstructor
@@ -35,71 +26,43 @@ import java.util.Date;
 public class AuthenticationService {
     UserRepository userRepository;
 
-    @NonFinal
-    @Value("${jwt.signerKey}")
-    protected String SIGNER_KEY;
-
-    public IntrospectResponse introspect(IntrospectRequest request)
-            throws JOSEException, ParseException {
-        var token = request.getToken();
-
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-
-        SignedJWT signedJWT = SignedJWT.parse(token);
-
-        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-
-        var verified = signedJWT.verify(verifier);
-
-        return IntrospectResponse.builder()
-                .valid(verified && expiryTime.after(new Date()))
-                .build();
-    }
-
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        // Retrieve the user from the database using the username from the request
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        // Get the user ID
+        String userId = String.valueOf(user.getId());
+        Role role = Role.valueOf(String.valueOf(user.getRole()));
+        String username = user.getUsername();
+        // Create a password encoder with a strength of 10
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-
-        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
-
-        if (!authenticated)
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-
-        var token = generateToken(request.getUsername());
-
-        return  AuthenticationResponse.builder()
-                    .token(token)
-                    .authenticated(true)
-                    .build();
+        // Verify the password from the request matches the stored password
+        boolean isAuthenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        // Return an AuthenticationResponse with the authentication status and user ID
+        return new AuthenticationResponse(isAuthenticated, userId, role,username);
     }
 
+    public UserCreationResponse saveUser(UserCreationRequest request) {
+        User user = new User();
 
+        if (userRepository.existsByUsername(request.getUsername()))
+            throw new AppException(ErrorCode.USER_EXISTED);
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+        user.setFullName(request.getFullName());
+        user.setRole(ROLE_USER);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-    private String generateToken(String username) {
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
+        user = userRepository.save(user);
 
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
-                .issuer("hotelmaster.com")
-                .issueTime(new Date())
-                .expirationTime(new Date(
-                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
-                ))
-                .claim("customClaim", "custom")
-                .build();
-
-        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
-
-        JWSObject jwsObject = new JWSObject(header, payload);
-
-        try {
-            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
-            return jwsObject.serialize();
-
-        } catch (JOSEException e) {
-            log.error("Cannot create token",e);
-            throw new RuntimeException(e);
-        }
+        UserCreationResponse response = new UserCreationResponse();
+        response.setAuthenticated(true);
+        response.setUserId(user.getId().toString());
+        response.setUsername(user.getUsername());
+        response.setRole(user.getRole());
+        return response;
     }
 }

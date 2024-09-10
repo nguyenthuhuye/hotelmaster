@@ -87,9 +87,8 @@ public class BookingService {
         bookingRepository.deleteById(id);
     }
 
-//    public Double calculateTotalPrice(Booking booking) {
-//        RoomTypes roomTypes = booking.getRoomNumber().getRoomType();
-//        long daysBetween = ChronoUnit.DAYS.between(booking.getCheckInDate(), booking.getCheckOutDate());
-//        return Double.valueOf(roomTypes.getPricePerNight() * daysBetween);
-//    }
+    public List<Booking> getBookingByUserId(Long userId){
+        return bookingRepository.findBookingByUserId(userId);
+//                orElseThrow(()-> new RuntimeException("Don't have booking"));
+    }
 }

@@ -28,8 +28,7 @@ public class RoomTypes {
     BigDecimal price;
     //Giá mỗi đêm
 
-    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    Set<Room> rooms = new HashSet<>();
-    Set<Room> rooms;
+//    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    Set<Room> rooms;
 
 }

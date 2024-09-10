@@ -1,3 +1,4 @@
+
 package com.example.hotelmaster.config;
 
 import lombok.Data;

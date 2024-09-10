@@ -2,21 +2,17 @@ package com.example.hotelmaster.controller;
 
 import com.example.hotelmaster.dto.request.ApiResponse;
 import com.example.hotelmaster.dto.request.AuthenticationRequest;
-import com.example.hotelmaster.dto.request.IntrospectRequest;
+import com.example.hotelmaster.dto.request.UserCreationRequest;
 import com.example.hotelmaster.dto.response.AuthenticationResponse;
-import com.example.hotelmaster.dto.response.IntrospectResponse;
+import com.example.hotelmaster.dto.response.UserCreationResponse;
 import com.example.hotelmaster.service.AuthenticationService;
-import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.text.ParseException;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,21 +21,32 @@ import java.text.ParseException;
 public class AuthenticationController {
     AuthenticationService authenticationService;
 
-    @PostMapping("/token")
-    ApiResponse<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
-        var result = authenticationService.authenticate(request);
+    @PostMapping("/login")
+    public ApiResponse<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
+        AuthenticationResponse response = authenticationService.authenticate(request);
+
         return ApiResponse.<AuthenticationResponse>builder()
-                .result(result)
+                .result(AuthenticationResponse.builder()
+                        .authenticated(response.isAuthenticated())
+                        .userId(response.getUserId())
+                        .role(response.getRole())
+                        .username(request.getUsername())
+                        .build())
                 .build();
     }
 
-    @PostMapping("/introspect")
-    ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request)
-            throws ParseException, JOSEException {
-        var result = authenticationService.introspect(request);
-        return ApiResponse.<IntrospectResponse>builder()
-                .result(result)
+    @PostMapping("/create")
+    public ApiResponse<UserCreationResponse> createUser(@RequestBody UserCreationRequest request) {
+        UserCreationResponse response = authenticationService.saveUser(request);
+        return ApiResponse.<UserCreationResponse>builder()
+                .result(UserCreationResponse.builder()
+                        .authenticated(response.isAuthenticated())
+                        .userId(response.getUserId())
+                        .role(response.getRole())
+                        .username(request.getUsername())
+                        .build())
                 .build();
     }
+
 
 }

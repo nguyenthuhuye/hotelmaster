@@ -90,4 +90,9 @@ Booking createBooking(@RequestBody BookingRequest request) {
         return ResponseEntity.ok(booking);
     }
 
+    @GetMapping("/getbooking/{userId}")
+    List<Booking> getBookingByUserId(@PathVariable("userId") Long userId){
+    return bookingService.getBookingByUserId(userId);
+    }
+
 }
