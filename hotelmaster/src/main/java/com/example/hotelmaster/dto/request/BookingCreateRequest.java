@@ -6,24 +6,18 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BookingRequest {
+public class BookingCreateRequest {
     Long userId;
     String roomNumber;
-    String userName;
     LocalDate checkInDate;
     LocalDate checkOutDate;
     BigDecimal totalPrice;
     BookingStatus bookingStatus;
-    List<Long> serviceId;
-    String email;
-    String adress;
-    String phoneNumer;
-    String serviceUpdate;
+    Long serviceIds;
 }

@@ -1,5 +1,6 @@
 package com.example.hotelmaster.service;
 
+import com.example.hotelmaster.constant.BookingStatus;
 import com.example.hotelmaster.dto.request.PaymentRequest;
 import com.example.hotelmaster.dto.request.UserUpdateRequest;
 import com.example.hotelmaster.entity.Booking;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,14 +30,28 @@ public class PaymentService {
     BookingRepository bookingRepository;
     private final ServicesRepository servicesRepository;
 
+    @Transactional
+    public Payment createPayment(Long bookingId, PaymentRequest request) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
 
-    public Payment createPayment(PaymentRequest request) {
+        if (booking.getPayment() != null) {
+            throw new IllegalStateException("Payment already exists for this booking");
+        }
+
         Payment payment = new Payment();
         payment.setAmount(request.getAmount());
         payment.setPaymentDate(LocalDate.now());
         payment.setPaymentMethod(request.getPaymentMethod());
 
-        return paymentRepository.save(payment);
+        Payment savedPayment = paymentRepository.save(payment);
+
+        // Cập nhật trạng thái của booking
+        booking.setBookingStatus(BookingStatus.COMPLETED);
+        booking.setPayment(savedPayment);
+        bookingRepository.save(booking);
+
+        return savedPayment;
     }
     /**
      * Tạo một Payment mới và tính tổng chi phí của các Service liên kết.

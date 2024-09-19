@@ -1,10 +1,13 @@
 package com.example.hotelmaster.dto.response;
 
 import com.example.hotelmaster.constant.BookingStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +19,10 @@ public class BookingResponse {
     String userName;
     LocalDate checkInDate;
     LocalDate checkOutDate;
-    Integer totalPrice;
+    BigDecimal totalPrice;
     BookingStatus bookingStatus;
+    Long userId;
+    List<Long> serviceId;
 }
+
+

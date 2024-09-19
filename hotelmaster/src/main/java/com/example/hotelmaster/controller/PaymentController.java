@@ -25,10 +25,10 @@ public class PaymentController {
     PaymentService paymentService;
 
 
-    @PostMapping
-    Payment createPayment(@RequestBody PaymentRequest request) {
-        return paymentService.createPayment(request);
-    }
+//    @PostMapping
+//    Payment createPayment(@RequestBody PaymentRequest request) {
+//        return paymentService.createPayment(request);
+//    }
 
     @GetMapping
     List<Payment> getAllPayment() {

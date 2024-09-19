@@ -1,17 +1,15 @@
-package com.example.hotelmaster.dto;
+package com.example.hotelmaster.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AvailableRoomDTO {
-    Long roomId;
+public class AvailableRoomProjectionResponse {
     String roomNumber;
-    BigDecimal price;
+    String roomType;
+    Double price;
 }

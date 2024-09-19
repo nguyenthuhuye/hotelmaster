@@ -28,7 +28,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         // Retrieve the user from the database using the username from the request
-        var user = userRepository.findByUsername(request.getUsername())
+        var user = userRepository.findByUsername(request.getUserName())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         // Get the user ID

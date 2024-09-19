@@ -1,15 +1,16 @@
 package com.example.hotelmaster.entity;
 
 import com.example.hotelmaster.constant.BookingStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,6 +18,8 @@ import java.util.Set;
 @Entity
 @Table(name = "booking")
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+@ToString(exclude = "services")
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,14 +28,17 @@ public class Booking {
     String roomNumber;
     LocalDate checkInDate;
     LocalDate checkOutDate;
-    Integer totalPrice;
+    BigDecimal totalPrice;
     BookingStatus bookingStatus;
+    String email;
+    String adress;
+    String phoneNumer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     Room room;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
 
@@ -45,5 +51,17 @@ public class Booking {
             joinColumns = @JoinColumn(name = "booking_id"),
             inverseJoinColumns = @JoinColumn(name = "service_id")
     )
-    Set<Services> services;
+//    Set<Services> services;
+    @JsonManagedReference
+    List<Services> services= new ArrayList<>();
+    public void setServices(List<Services> services) {
+        this.services = services;
+    }
+
+    public List<Services> getServices() {
+        return this.services;
+    }
+
+    public void setUsers(Long users) {
+    }
 }

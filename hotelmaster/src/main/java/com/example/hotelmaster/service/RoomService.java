@@ -1,8 +1,7 @@
 package com.example.hotelmaster.service;
 
 import com.example.hotelmaster.constant.RoomStatus;
-import com.example.hotelmaster.constant.RoomType;
-import com.example.hotelmaster.dto.AvailableRoomDTO;
+import com.example.hotelmaster.dto.AvailableRoomProjection;
 import com.example.hotelmaster.dto.request.RoomRequest;
 import com.example.hotelmaster.entity.Room;
 import com.example.hotelmaster.mapper.RoomMaper;
@@ -13,11 +12,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +38,10 @@ public class RoomService {
     public Room getRoom(Long id) {
         return roomRepository.findById(id).
                 orElseThrow(() -> new RuntimeException("Room not found"));
+    }
+
+    public Room getRoom1(String roomNumber) {
+        return roomRepository.findByRoomNumber(roomNumber);
     }
 
     public Room updateRoom(Long id, RoomRequest request) {
@@ -74,5 +74,9 @@ public class RoomService {
 
     public List<Room> getAvailableRoomsInDateRange(LocalDate startDate, LocalDate endDate) {
         return roomRepository.findAvailableRoomsInDateRange(startDate, endDate);
+    }
+
+    public List<AvailableRoomProjection> getAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate) {
+        return roomRepository.findAvailableRooms(checkInDate, checkOutDate);
     }
 }

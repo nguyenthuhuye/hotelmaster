@@ -29,7 +29,7 @@ public class ExcelExportService {
 
             // Tạo tiêu đề cột
             Row headerRow = sheet.createRow(0);
-            String[] headers = {"ID", "Room Number", "Guest Name", "Booking Date"};
+            String[] headers = {"ID", "Booking Status", "Check in", "Check out","Room Number", "Total price","Guest Name"};
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
@@ -41,9 +41,12 @@ public class ExcelExportService {
                 Row row = sheet.createRow(rowIdx++);
 
                 row.createCell(0).setCellValue(booking.getId());
-                row.createCell(1).setCellValue(booking.getRoomNumber());
-//                row.createCell(2).setCellValue(booking.getUserId());
-                row.createCell(3).setCellValue(booking.getCheckInDate().toString());
+                row.createCell(1).setCellValue(String.valueOf(booking.getBookingStatus()));
+                row.createCell(2).setCellValue(booking.getCheckInDate().toString());
+                row.createCell(3).setCellValue(booking.getCheckOutDate().toString());
+                row.createCell(4).setCellValue(booking.getRoomNumber());
+                row.createCell(5).setCellValue(String.valueOf(booking.getTotalPrice()));
+                row.createCell(6).setCellValue(booking.getUserName());
             }
 
             workbook.write(out);
