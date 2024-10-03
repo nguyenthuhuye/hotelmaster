@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentRequest {
-    String bookingId;
+    Long bookingId;
 
     BigDecimal amount;
 

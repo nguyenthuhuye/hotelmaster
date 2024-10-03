@@ -3,6 +3,8 @@ package com.example.hotelmaster.repository;
 import com.example.hotelmaster.entity.Booking;
 import com.example.hotelmaster.entity.Services;
 import com.example.hotelmaster.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,11 +23,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     // Câu query tùy chỉnh để lấy danh sách Service theo Booking ID (nếu cần)
     @Query("SELECT b.services FROM Booking b WHERE b.id = :bookingId")
     List<Services> findServicesByBookingId(@Param("bookingId") Long bookingId);
-
-
-    List<Booking> findBookingByUserId (Long userId);
-
-    List<Booking> findBookingByUserName (String userName);
-
-    List<Booking> findByUserIdAndRoomNumberIn(Long userId, List<String> roomNumbers);
+    Page<Booking> findByUserId(Long userId, Pageable pageable);
 }

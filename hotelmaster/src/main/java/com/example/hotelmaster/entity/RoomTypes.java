@@ -26,9 +26,5 @@ public class RoomTypes {
     String description;
     //Sức chứa
     BigDecimal price;
-    //Giá mỗi đêm
-
-//    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    Set<Room> rooms;
 
 }

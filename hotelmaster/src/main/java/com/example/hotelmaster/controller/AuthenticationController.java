@@ -43,7 +43,7 @@ public class AuthenticationController {
                         .authenticated(response.isAuthenticated())
                         .userId(response.getUserId())
                         .role(response.getRole())
-                        .username(request.getUsername())
+                        .userName(request.getUsername())
                         .build())
                 .build();
     }

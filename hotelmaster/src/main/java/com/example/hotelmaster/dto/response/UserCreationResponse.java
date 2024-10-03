@@ -13,5 +13,5 @@ public class UserCreationResponse {
     boolean authenticated;
     String userId;
     Role role;
-    String username;
+    String userName;
 }

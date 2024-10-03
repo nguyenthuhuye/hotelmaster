@@ -61,7 +61,7 @@ public class AuthenticationService {
         UserCreationResponse response = new UserCreationResponse();
         response.setAuthenticated(true);
         response.setUserId(user.getId().toString());
-        response.setUsername(user.getUsername());
+        response.setUserName(user.getUsername());
         response.setRole(user.getRole());
         return response;
     }

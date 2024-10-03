@@ -1,8 +1,15 @@
 package com.example.hotelmaster.controller;
 
 import com.example.hotelmaster.dto.AvailableRoomProjection;
+import com.example.hotelmaster.dto.request.BookingRequest;
 import com.example.hotelmaster.dto.request.RoomRequest;
+import com.example.hotelmaster.dto.response.BookingResponse;
+import com.example.hotelmaster.dto.response.GetRoomResponse;
+import com.example.hotelmaster.dto.response.RoomResponse;
 import com.example.hotelmaster.entity.Room;
+import com.example.hotelmaster.entity.RoomTypes;
+import com.example.hotelmaster.repository.RoomRepository;
+import com.example.hotelmaster.repository.RoomTypesRepository;
 import com.example.hotelmaster.service.RoomService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/room")
@@ -21,33 +29,33 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class RoomController {
-
-
     RoomService roomService;
+    RoomRepository roomRepository;
+    RoomTypesRepository roomTypesRepository;
 
     @PostMapping
-    Room createRoom(@RequestBody RoomRequest request) {
-        return roomService.createRoom(request);
+    public ResponseEntity<RoomResponse> createRoom(@RequestBody RoomRequest roomRequest) {
+        RoomResponse response = roomService.createRoom(roomRequest);
+        return ResponseEntity.ok(response);
     }
 
-
-    @GetMapping
-    List<Room> getAllRoom() {
-        return roomService.getAllRoom();
+    @GetMapping("/{id}")
+    public ResponseEntity<RoomResponse> getRoom(@PathVariable Long id) {
+        RoomResponse response = roomService.getRoomById(id);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{Id}")
-    Room getRoom(@PathVariable("Id") Long Id) {
-        return roomService.getRoom(Id);
+    @GetMapping  // Phương thức GET
+    public List<RoomResponse> getAllRooms() {
+        return roomService.getAllRoom();  // Gọi hàm lấy danh sách phòng
     }
-    @GetMapping("getroomNumber/{roomNumber}")
-    Room getRoom1(@PathVariable("roomNumber") String roomNumber) {
-        return roomService.getRoom1(roomNumber);
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RoomResponse> updateRoom(@PathVariable Long id, @RequestBody RoomRequest roomRequest) {
+        RoomResponse updateRoom = roomService.updateRoom(id, roomRequest);
+        return ResponseEntity.ok(updateRoom);
     }
-    @PutMapping("/{Id}")
-    Room updateRoom(@PathVariable Long Id, @RequestBody RoomRequest request) {
-        return roomService.updateRoom(Id, request);
-    }
+
 
     @DeleteMapping("/{Id}")
     String deleteRoom(@PathVariable Long Id) {
@@ -63,12 +71,29 @@ public class RoomController {
         return ResponseEntity.ok(availableRooms);
     }
 
-    @GetMapping("/available-in-range")
-    public ResponseEntity<List<Room>> getAvailableRoomsInDateRange(@RequestParam("startDate") String startDate,
-                                                                   @RequestParam("endDate") String endDate) {
-        LocalDate start = LocalDate.parse(startDate);
-        LocalDate end = LocalDate.parse(endDate);
-        List<Room> availableRooms = roomService.getAvailableRoomsInDateRange(start, end);
-        return ResponseEntity.ok(availableRooms);
+    @GetMapping("/user/{id}")
+    public ResponseEntity<GetRoomResponse> getRoomById(@PathVariable Long id) {
+        Optional<Room> roomOptional = roomRepository.findById(id)
+                ;
+
+        if (roomOptional.isPresent()) {
+            Room room = roomOptional.get();
+            RoomTypes roomType = roomTypesRepository.findByRoomType(room.getRoomType())
+                    .orElseThrow(() -> new RuntimeException("RoomType not found"));
+
+            GetRoomResponse response = new GetRoomResponse(
+                    room.getId(),
+                    room.getRoomNumber(),
+                    room.getImageUrl(),
+                    room.getRoomStatus(),
+                    room.getRoomType(),
+                    roomType.getPrice()
+            );
+
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
+

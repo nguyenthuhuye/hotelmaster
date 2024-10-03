@@ -1,8 +1,7 @@
 package com.example.hotelmaster.entity;
 
 import com.example.hotelmaster.constant.BookingStatus;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -18,8 +17,9 @@ import java.util.List;
 @Entity
 @Table(name = "booking")
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIgnoreProperties(ignoreUnknown = true)
 @ToString(exclude = "services")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +38,7 @@ public class Booking {
     @JoinColumn(name = "room_id")
     Room room;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;

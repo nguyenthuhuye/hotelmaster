@@ -2,6 +2,9 @@ package com.example.hotelmaster.controller;
 
 import com.example.hotelmaster.dto.request.BookingRequest;
 import com.example.hotelmaster.dto.request.PaymentRequest;
+import com.example.hotelmaster.dto.response.BookingResponse;
+import com.example.hotelmaster.dto.response.PaymentResponse;
+import com.example.hotelmaster.dto.response.RoomResponse;
 import com.example.hotelmaster.entity.Booking;
 import com.example.hotelmaster.entity.Payment;
 import com.example.hotelmaster.repository.BookingRepository;
@@ -14,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -45,28 +49,33 @@ public class BookingController {
     PaymentService paymentService;
 
     @PostMapping
-    Booking createBooking(@RequestBody BookingRequest request) {
-    return bookingService.createBooking(request);
+    public ResponseEntity<BookingResponse> createBooking(@RequestBody BookingRequest bookingRequest) {
+        BookingResponse response = bookingService.createBooking(bookingRequest);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping
-    List<Booking> getAllBooking() {
-        List<Booking> bookings = new ArrayList<>();
-        try {
-            bookings = bookingService.getAllBooking();
-        } catch (Exception e) {
-            LOGGER.error("{}", e);
-        }
-        return bookings;
-    }
-    @GetMapping("/{userName}")
-    Booking getBooking(@PathVariable("userName") Long Id) {
-        return bookingService.getBooking(Id);
+    @GetMapping("/{id}")
+    public ResponseEntity<BookingResponse> getBooking(@PathVariable Long id) {
+        BookingResponse response = bookingService.getBookingById(id);
+        return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{Id}")
-    Booking updateBooking(@PathVariable Long Id, @RequestBody BookingRequest request) {
-        return bookingService.updateBooking(Id, request);
+//    @GetMapping
+//    public ResponseEntity<List<BookingResponse>> getAllBookings(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        List<BookingResponse> bookings = bookingService.getAllBookings(page, size);
+//        return ResponseEntity.ok(bookings);
+//    }
+    @GetMapping  // Phương thức GET
+    public List<BookingResponse> getAllBookings() {
+        return bookingService.getAllBookings();  // Gọi hàm lấy danh sách phòng
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BookingResponse> updateBooking(@PathVariable Long id, @RequestBody BookingRequest bookingRequest) {
+        BookingResponse updatedBooking = bookingService.updateBooking(id, bookingRequest);
+        return ResponseEntity.ok(updatedBooking);
     }
 
     @DeleteMapping("/{Id}")
@@ -92,27 +101,18 @@ public class BookingController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(in.readAllBytes());
     }
-
-    @PostMapping("/{bookingId}/add-services")
-    public ResponseEntity<Booking> addServicesToBooking(
-            @PathVariable Long bookingId,
-            @RequestBody List<Long> serviceIds) {
-        Booking booking = bookingService.createBookingWithServices(bookingId, serviceIds);
-        return ResponseEntity.ok(booking);
-    }
-
-//    @GetMapping("/getbooking/{userName}")
-//    List<Booking> getBookingByUserName(@PathVariable("userName") String userName){
-//    return bookingService.getBookingByUserName(userName);
-//    }
-    @GetMapping("/getbooking/{userId}")
-    List<Booking> getBookingByUserId(@PathVariable("userId") Long userId) {
-    return bookingService.getBookingByUserId(userId);
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Page<BookingResponse>> getBookingsByUserId(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<BookingResponse> bookings = bookingService.getBookingsByUserId(userId, page, size);
+        return ResponseEntity.ok(bookings);
     }
 
     @PostMapping("/{bookingId}/payments")
-    public ResponseEntity<Payment> createPayment(@PathVariable Long bookingId, @RequestBody PaymentRequest request) {
-        Payment payment = paymentService.createPayment(bookingId, request);
+    public ResponseEntity<PaymentResponse> createPayment(@PathVariable Long bookingId, @RequestBody PaymentRequest request) {
+        PaymentResponse payment = paymentService.createPayment(bookingId, request);
         return ResponseEntity.ok(payment);
     }
 

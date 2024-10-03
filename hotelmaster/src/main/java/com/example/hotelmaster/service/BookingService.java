@@ -1,29 +1,30 @@
 package com.example.hotelmaster.service;
 
-import com.example.hotelmaster.constant.BookingStatus;
-import com.example.hotelmaster.dto.request.BookingCreateRequest;
 import com.example.hotelmaster.dto.request.BookingRequest;
-import com.example.hotelmaster.dto.request.RoomRequest;
+import com.example.hotelmaster.dto.response.BookingResponse;
+import com.example.hotelmaster.dto.response.RoomResponse;
 import com.example.hotelmaster.entity.*;
-import com.example.hotelmaster.mapper.BookingMapper;
 import com.example.hotelmaster.repository.BookingRepository;
 import com.example.hotelmaster.repository.RoomRepository;
 import com.example.hotelmaster.repository.ServicesRepository;
 import com.example.hotelmaster.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,89 +37,42 @@ public class BookingService {
     ServicesRepository servicesRepository;
     UserRepository userRepository;
     RoomRepository roomRepository;
+    @Transactional
+    public BookingResponse createBooking(BookingRequest bookingRequest) {
+        // Validate and fetch related entities
+        Room room = roomRepository.findById(bookingRequest.getRoomId())
+                .orElseThrow(() -> new EntityNotFoundException("Room not found"));
+        User user = userRepository.findById(bookingRequest.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+//        List<Services> services = servicesRepository.findAllById(bookingRequest.getServiceId());
 
-    public Booking createBooking(BookingRequest request) {
-//        Booking booking = new Booking();
-//        booking.setUser(request.getUserId());
-//        booking.setRoomNumber(request.getRoomNumber());
-//        booking.setUserName(request.getUserName());
-//        booking.setCheckInDate(request.getCheckInDate());
-//        booking.setCheckOutDate(request.getCheckOutDate());
-//        booking.setTotalPrice(request.getTotalPrice());
-//        booking.setBookingStatus(BookingStatus.BOOKED);
-//        booking.setEmail(request.getEmail());
-//        booking.setAdress(request.getAdress());
-//        booking.setPhoneNumer(request.getPhoneNumer());
-////        booking.setServices(request.getServiceId());
-//        List<Services> services = new ArrayList<>();
-//
-//        // Kiểm tra và gán giá trị cho services
-//        if (request.getServiceId() != null && !request.getServiceId().isEmpty()) {
-//            for (Long serviceId : request.getServiceId()) {
-//                Services service = servicesRepository.findById(serviceId)
-//                        .orElseThrow(() -> new RuntimeException("Service not found with id: " + serviceId));
-//                services.add(service);
-//            }
-//            booking.setServices(services);
-//            System.out.println("Services set successfully: " + services);
-//        } else {
-//            // Nếu request không có service IDs, set danh sách trống
-//            booking.setServices(Collections.emptyList());
-//            System.out.println("No services provided, setting empty list.");
-//        }
-//
-//        return bookingRepository.save(booking);
-
-        //        List<User> users = new ArrayList<>();
-////         Kiểm tra và gán giá trị cho
-//        if (request.getUserId() != null && !request.getUserId().isEmpty()) {
-//            for (Long userId : request.getUserId()) {
-//                User user = userRepository.findById(userId)
-//                        .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-//                users.add(user);
-//            }
-//            booking.setUser(users);
-//            System.out.println("User set successfully: " + users);
-//        } else {
-//            // Nếu request không có service IDs, set danh sách trống
-//            booking.setUser(Collections.emptyList());
-//            System.out.println("No user provided, setting empty list.");
-//        }
-//        if (request.getUserId() == null || request.getUserId().isEmpty()) {
-//            throw new IllegalArgumentException("User IDs list cannot be null or empty");
-//        }
-//        Room room = roomRepository.findByRoomNumber(request.getRoomNumber())
-//                .orElseThrow(() -> new RuntimeException("Room not found with number: " + request.getRoomNumber()));
-
-//        List<User> users = request.getUserId().stream()
-//                .map(userId -> userRepository.findById(userId)
-//                        .orElseThrow(() -> new RuntimeException("User not found with id: " + userId)))
-//                .collect(Collectors.toList());
+        // Create and save the booking
         Booking booking = new Booking();
-        booking.setUsers(request.getUserId());
-        booking.setRoomNumber(request.getRoomNumber());
-        booking.setUserName(request.getUserName());
-        booking.setCheckInDate(request.getCheckInDate());
-        booking.setCheckOutDate(request.getCheckOutDate());
-        booking.setTotalPrice(request.getTotalPrice());
-        booking.setBookingStatus(BookingStatus.BOOKED);
-        booking.setEmail(request.getEmail());
-        booking.setAdress(request.getAdress());
-        booking.setPhoneNumer(request.getPhoneNumer());
+        booking.setRoomNumber(bookingRequest.getRoomNumber());
+        booking.setRoom(room);
+        booking.setUser(user);
+        booking.setUserName(bookingRequest.getUserName());
+        booking.setCheckInDate(bookingRequest.getCheckInDate());
+        booking.setCheckOutDate(bookingRequest.getCheckOutDate());
+        booking.setTotalPrice(bookingRequest.getTotalPrice());
+        booking.setBookingStatus(bookingRequest.getBookingStatus());
+        booking.setPhoneNumer(bookingRequest.getPhoneNumer());
+        booking.setEmail(bookingRequest.getEmail());
+        booking.setAdress(bookingRequest.getAdress());
+//        booking.setServices(services);
 
         List<Services> services = new ArrayList<>();
-
         // Ưu tiên sử dụng serviceId nếu có
-        if (request.getServiceId() != null && !request.getServiceId().isEmpty()) {
-            for (Long serviceId : request.getServiceId()) {
+        if (bookingRequest.getServiceId() != null && !bookingRequest.getServiceId().isEmpty()) {
+            for (Long serviceId : bookingRequest.getServiceId()) {
                 Services service = servicesRepository.findById(serviceId)
                         .orElseThrow(() -> new RuntimeException("Service not found with id: " + serviceId));
                 services.add(service);
             }
         }
         // Nếu không có serviceId, sử dụng serviceUpdate
-        else if (request.getServiceUpdate() != null && !request.getServiceUpdate().isEmpty()) {
-            String jsonServiceIds = convertServiceUpdate(request.getServiceUpdate());
+        else if (bookingRequest.getServiceUpdate() != null && !bookingRequest.getServiceUpdate().isEmpty()) {
+            String jsonServiceIds = convertServiceUpdate(bookingRequest.getServiceUpdate());
             JSONObject jsonObject = new JSONObject(jsonServiceIds);
             JSONArray serviceIdArray = jsonObject.getJSONArray("serviceId");
 
@@ -137,65 +91,130 @@ public class BookingService {
             System.out.println("No services provided, setting empty list.");
         }
 
-        return bookingRepository.save(booking);
+        Booking savedBooking = bookingRepository.save(booking);
+
+        // Create and return the response
+        return createBookingResponse(savedBooking);
     }
 
-
-    public Booking createBookingWithServices(Long bookingId, List<Long> serviceIds) {
-        // Tạo hoặc lấy Booking
-        Booking booking = bookingRepository.findById(bookingId).orElse(new Booking());
-        return bookingRepository.save(booking);
+    public BookingResponse getBookingById(Long id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found with id: " + id));
+        return createBookingResponse(booking);
     }
 
-    public List<Booking> getAllBooking() {
-        return bookingRepository.findAll();
+//    public List<BookingResponse> getAllBookings(int page, int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<Booking> bookingPage = bookingRepository.findAll(pageable);
+//        return bookingPage.getContent().stream()
+//                .map(this::createBookingResponse)
+//                .collect(Collectors.toList());
+//    }
+
+    public List<BookingResponse> getAllBookings() {
+        List<Booking> bookings = bookingRepository.findAll();  // Lấy toàn bộ danh sách phòng
+        return bookings.stream()
+                .sorted(Comparator.comparing(Booking::getCheckInDate).reversed())
+                .map(this::createBookingResponse)
+                .collect(Collectors.toList());
     }
 
-    public Booking getBooking(Long id) {
-        return bookingRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Booking not found"));
+    private BookingResponse createBookingResponse(Booking booking) {
+        BookingResponse response = new BookingResponse();
+        response.setRoomNumber(booking.getRoomNumber());
+        // Null check for Room
+        if (booking.getRoom() != null) {
+            response.setRoomId(booking.getRoom().getId());
+        } else {
+            response.setRoomId(null);
+            // Optionally log this unexpected state
+            log.warn("Booking with ID {} has no associated room", booking.getId());
+        }
+
+        // Null check for User
+        if (booking.getUser() != null) {
+            response.setUserId(booking.getUser().getId());
+        } else {
+            response.setUserId(null);
+            log.warn("Booking with ID {} has no associated user", booking.getId());
+        }
+        response.setUserName(booking.getUserName());
+        response.setCheckInDate(booking.getCheckInDate());
+        response.setCheckOutDate(booking.getCheckOutDate());
+        response.setTotalPrice(booking.getTotalPrice());
+        response.setBookingStatus(booking.getBookingStatus());
+        response.setPhoneNumber(booking.getPhoneNumer());
+        response.setId(booking.getId());
+        response.setEmail(booking.getEmail());
+        response.setAdress(booking.getAdress());
+
+        // Null check for Services
+        if (booking.getServices() != null) {
+            response.setServiceId(booking.getServices().stream()
+                    .map(Services::getId)
+                    .collect(Collectors.toList()));
+        } else {
+            response.setServiceId(Collections.emptyList());
+        }
+        return response;
     }
+
 
     @Transactional
-    public Booking updateBooking(Long id, BookingRequest request) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
+    public BookingResponse updateBooking(Long id, BookingRequest bookingRequest) {
+        Booking existingBooking = bookingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found with id: " + id));
+
+        // Update room if provided in the request
+        if (bookingRequest.getRoomId() != null) {
+            Room newRoom = roomRepository.findById(bookingRequest.getRoomId())
+                    .orElseThrow(() -> new EntityNotFoundException("Room not found with id: " + bookingRequest.getRoomId()));
+            existingBooking.setRoom(newRoom);
+        } else if (existingBooking.getRoom() == null) {
+            // If no room is provided and the existing booking doesn't have a room, log a warning
+            log.warn("Booking with ID {} has no associated room and no new room was provided", id);
+        }
+
+        // Update user if provided in the request
+        if (bookingRequest.getUserId() != null) {
+            User newUser = userRepository.findById(bookingRequest.getUserId())
+                    .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + bookingRequest.getUserId()));
+            existingBooking.setUser(newUser);
+        }
+
+        if (bookingRequest.getRoomNumber() != null) {
+            existingBooking.setRoomNumber(bookingRequest.getRoomNumber());
+        }
+        if (bookingRequest.getUserName() != null) {
+            existingBooking.setUserName(bookingRequest.getUserName());
+        }
+        if (bookingRequest.getCheckInDate() != null) {
+            existingBooking.setCheckInDate(bookingRequest.getCheckInDate());
+        }
+        if (bookingRequest.getCheckOutDate() != null) {
+            existingBooking.setCheckOutDate(bookingRequest.getCheckOutDate());
+        }
+        if (bookingRequest.getEmail() != null) {
+            existingBooking.setEmail(bookingRequest.getEmail());
+        }
+        if (bookingRequest.getAdress() != null) {
+            existingBooking.setAdress(bookingRequest.getAdress());
+        }
+        if (bookingRequest.getPhoneNumer() != null) {
+            existingBooking.setPhoneNumer(bookingRequest.getPhoneNumer());
+        }
+        if (bookingRequest.getUserName() != null) {
+            existingBooking.setUserName(bookingRequest.getUserName());
+        }
 
         boolean priceChanged = false;
-        BigDecimal oldTotalPrice = booking.getTotalPrice();
-
-//        if (request.getUserId() != null) {
-//            booking.setUser(userRepository.findById(request.getUserId())
-//                    .orElseThrow(() -> new RuntimeException("User not found with id: " + request.getUserId())).getId());
-//        }
-        if (request.getRoomNumber() != null) {
-            booking.setRoomNumber(request.getRoomNumber());
-        }
-        if (request.getUserName() != null) {
-            booking.setUserName(request.getUserName());
-        }
-        if (request.getCheckInDate() != null) {
-            booking.setCheckInDate(request.getCheckInDate());
-        }
-        if (request.getCheckOutDate() != null) {
-            booking.setCheckOutDate(request.getCheckOutDate());
-        }
-        if (request.getEmail() != null) {
-            booking.setEmail(request.getEmail());
-        }
-        if (request.getAdress() != null) {
-            booking.setAdress(request.getAdress());
-        }
-        if (request.getPhoneNumer() != null) {
-            booking.setPhoneNumer(request.getPhoneNumer());
-        }
-
+        BigDecimal oldTotalPrice = existingBooking.getTotalPrice();
         // Xử lý cập nhật dịch vụ và tính toán lại giá
         List<Long> serviceIds = new ArrayList<>();
-        if (request.getServiceId() != null && !request.getServiceId().isEmpty()) {
-            serviceIds = request.getServiceId();
-        } else if (request.getServiceUpdate() != null && !request.getServiceUpdate().isEmpty()) {
-            String jsonServiceIds = convertServiceUpdate(request.getServiceUpdate());
+        if (bookingRequest.getServiceId() != null && !bookingRequest.getServiceId().isEmpty()) {
+            serviceIds = bookingRequest.getServiceId();
+        } else if (bookingRequest.getServiceUpdate() != null && !bookingRequest.getServiceUpdate().isEmpty()) {
+            String jsonServiceIds = convertServiceUpdate(bookingRequest.getServiceUpdate());
             JSONObject jsonObject = new JSONObject(jsonServiceIds);
             JSONArray serviceIdArray = jsonObject.getJSONArray("serviceId");
             for (int i = 0; i < serviceIdArray.length(); i++) {
@@ -215,118 +234,40 @@ public class BookingService {
             }
 
             // Tính toán sự chênh lệch giá
-            BigDecimal oldServicesPrice = booking.getServices().stream()
+            BigDecimal oldServicesPrice = existingBooking.getServices().stream()
                     .map(Services::getPrice)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal priceDifference = additionalPrice.subtract(oldServicesPrice);
 
-            booking.setServices(newServices);
+            existingBooking.setServices(newServices);
 
             // Cập nhật totalPrice
             if (priceDifference.compareTo(BigDecimal.ZERO) != 0) {
                 BigDecimal newTotalPrice = oldTotalPrice.add(priceDifference);
-                booking.setTotalPrice(newTotalPrice);
+                existingBooking.setTotalPrice(newTotalPrice);
                 priceChanged = true;
             }
 
             System.out.println("Services updated successfully: " + newServices);
         }
 
-        Booking updatedBooking = bookingRepository.save(booking);
+        Booking updatedBooking = bookingRepository.save(existingBooking);
 
         if (priceChanged) {
             System.out.println("Total price updated from " + oldTotalPrice + " to " + updatedBooking.getTotalPrice());
         }
 
-        return updatedBooking;
+        return createBookingResponse(updatedBooking);
     }
-//    public Booking updateBooking(Long id, BookingRequest request) {
-//
-//        Booking booking = bookingRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
-//
-//        boolean priceChanged = false;
-//        BigDecimal oldTotalPrice = booking.getTotalPrice();
-//
-//        if (request.getUserId() != null) {
-//            booking.setUser(userRepository.findById(request.getUserId())
-//                    .orElseThrow(() -> new RuntimeException("User not found with id: " + request.getUserId())).getId());
-//        }
-//        if (request.getRoomNumber() != null) {
-//            booking.setRoomNumber(request.getRoomNumber());
-//        }
-//        if (request.getUserName() != null) {
-//            booking.setUserName(request.getUserName());
-//        }
-//        if (request.getCheckInDate() != null) {
-//            booking.setCheckInDate(request.getCheckInDate());
-//        }
-//        if (request.getCheckOutDate() != null) {
-//            booking.setCheckOutDate(request.getCheckOutDate());
-//        }
-//        if (request.getEmail() != null) {
-//            booking.setEmail(request.getEmail());
-//        }
-//        if (request.getAdress() != null) {
-//            booking.setAdress(request.getAdress());
-//        }
-//        if (request.getPhoneNumer() != null) {
-//            booking.setPhoneNumer(request.getPhoneNumer());
-//        }
-//
-//        // Xử lý cập nhật dịch vụ và tính toán lại giá
-//        if (request.getServiceId() != null) {
-//            List<Services> newServices = new ArrayList<>();
-//            BigDecimal additionalPrice = BigDecimal.ZERO;
-//
-//            for (Long serviceId : request.getServiceId()) {
-//                Services service = servicesRepository.findById(serviceId)
-//                        .orElseThrow(() -> new RuntimeException("Service not found with id: " + serviceId));
-//                newServices.add(service);
-//                additionalPrice = additionalPrice.add(service.getPrice());
-//            }
-//
-//            // Tính toán sự chênh lệch giá
-//            BigDecimal oldServicesPrice = booking.getServices().stream()
-//                    .map(Services::getPrice)
-//                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-//            BigDecimal priceDifference = additionalPrice.subtract(oldServicesPrice);
-//
-//            booking.setServices(newServices);
-//
-//            // Cập nhật totalPrice
-//            if (priceDifference.compareTo(BigDecimal.ZERO) != 0) {
-//                BigDecimal newTotalPrice = oldTotalPrice.add(priceDifference);
-//                booking.setTotalPrice(newTotalPrice);
-//                priceChanged = true;
-//            }
-//
-//            System.out.println("Services updated successfully: " + newServices);
-//        }
-//
-//        // Nếu request chỉ định totalPrice mới, sử dụng giá trị đó thay vì tính toán
-////        if (request.getTotalPrice() != null) {
-////            booking.setTotalPrice(new BigDecimal(String.valueOf(request.getTotalPrice())));
-////            priceChanged = true;
-////        }
-//
-//        Booking updatedBooking = bookingRepository.save(booking);
-//
-//        if (priceChanged) {
-//            System.out.println("Total price updated from " + oldTotalPrice + " to " + updatedBooking.getTotalPrice());
-//        }
-//
-//        return updatedBooking;
-//    }
-
 
     public void deleteBooking(Long id) {
         bookingRepository.deleteById(id);
     }
 
-
-    public List<Booking> getBookingByUserId(Long userId){
-        return bookingRepository.findBookingByUserId(userId);
+    public Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Booking> bookings = bookingRepository.findByUserId(userId, pageable);
+        return bookings.map(this::createBookingResponse);
     }
 
     public String convertServiceUpdate(String serviceUpdate) {

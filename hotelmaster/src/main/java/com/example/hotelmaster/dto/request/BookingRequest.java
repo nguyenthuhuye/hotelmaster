@@ -16,6 +16,7 @@ import java.util.List;
 public class BookingRequest {
     Long userId;
     String roomNumber;
+    Long roomId;
     String userName;
     LocalDate checkInDate;
     LocalDate checkOutDate;

@@ -15,14 +15,20 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingResponse {
+    long id;
     String roomNumber;
     String userName;
+    Long roomId;
+    Long userId;
     LocalDate checkInDate;
     LocalDate checkOutDate;
     BigDecimal totalPrice;
     BookingStatus bookingStatus;
-    Long userId;
+    String phoneNumber;
     List<Long> serviceId;
+    String email;
+    String adress;
+    String phoneNumer;
 }
 
 

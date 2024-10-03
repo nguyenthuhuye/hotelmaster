@@ -2,6 +2,9 @@ package com.example.hotelmaster.entity;
 
 import com.example.hotelmaster.constant.RoomStatus;
 import com.example.hotelmaster.constant.RoomType;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,6 +30,7 @@ public class Room {
     RoomStatus roomStatus;
     RoomType roomType;
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+
     Set<Booking> bookings;
 
 }

@@ -1,7 +1,10 @@
 package com.example.hotelmaster.controller;
 
 import com.example.hotelmaster.dto.request.PaymentRequest;
+import com.example.hotelmaster.dto.request.RoomRequest;
 import com.example.hotelmaster.dto.request.ServicesRequest;
+import com.example.hotelmaster.dto.response.PaymentResponse;
+import com.example.hotelmaster.dto.response.RoomResponse;
 import com.example.hotelmaster.entity.Payment;
 import com.example.hotelmaster.entity.Services;
 import com.example.hotelmaster.service.PaymentService;
@@ -29,21 +32,23 @@ public class PaymentController {
 //    Payment createPayment(@RequestBody PaymentRequest request) {
 //        return paymentService.createPayment(request);
 //    }
-
-    @GetMapping
-    List<Payment> getAllPayment() {
-        return paymentService.getAllPayment();
+    @GetMapping  // Phương thức GET
+    public List<PaymentResponse> getAllPayment() {
+        return paymentService.getAllPayment();  // Gọi hàm lấy danh sách phòng
     }
 
-    @GetMapping("/{Id}")
-    Payment getPayment(@PathVariable("Id") Long Id) {
-        return paymentService.getPayment(Id);
+    @GetMapping("/{id}")
+    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable Long id) {
+        PaymentResponse response = paymentService.getPaymentById(id);
+        return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{Id}")
-    Payment updatePayment(@PathVariable Long Id, @RequestBody PaymentRequest request) {
-        return paymentService.updatePayment(Id, request);
+    @PutMapping("/{id}")
+    public ResponseEntity<PaymentResponse> updatePayment(@PathVariable Long id, @RequestBody PaymentRequest paymentRequest) {
+        PaymentResponse updatePayment = paymentService.updatePayment(id, paymentRequest);
+        return ResponseEntity.ok(updatePayment);
     }
+
 
     @DeleteMapping("/{Id}")
     String deletePayment(@PathVariable Long Id) {
@@ -51,20 +56,4 @@ public class PaymentController {
         return "Payment deleted";
     }
 
-    /**
-     * API để tạo một Payment và tính tổng tiền của các Service liên kết.
-     *
-     * @param bookingId ID của Booking liên kết.
-     * @param payment Thông tin Payment cần tạo.
-     * @param serviceIds Danh sách ID của Service cần liên kết.
-     * @return Payment đã tạo với tổng chi phí.
-     */
-    @PostMapping("/create-with-services")
-    public ResponseEntity<Payment> createPaymentWithServices(
-            @RequestParam Long bookingId,
-            @RequestBody Payment payment,
-            @RequestParam List<Long> serviceIds) {
-        Payment createdPayment = paymentService.createPaymentWithTotalCost(bookingId, payment, serviceIds);
-        return ResponseEntity.ok(createdPayment);
-    }
 }

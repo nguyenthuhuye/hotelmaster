@@ -1,15 +1,17 @@
 package com.example.hotelmaster.service;
 
 import com.example.hotelmaster.constant.BookingStatus;
+import com.example.hotelmaster.constant.RoomStatus;
 import com.example.hotelmaster.dto.request.PaymentRequest;
+import com.example.hotelmaster.dto.request.RoomRequest;
 import com.example.hotelmaster.dto.request.UserUpdateRequest;
-import com.example.hotelmaster.entity.Booking;
-import com.example.hotelmaster.entity.Payment;
-import com.example.hotelmaster.entity.Services;
-import com.example.hotelmaster.entity.User;
+import com.example.hotelmaster.dto.response.PaymentResponse;
+import com.example.hotelmaster.dto.response.RoomResponse;
+import com.example.hotelmaster.entity.*;
 import com.example.hotelmaster.repository.BookingRepository;
 import com.example.hotelmaster.repository.PaymentRepository;
 import com.example.hotelmaster.repository.ServicesRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,13 +35,9 @@ public class PaymentService {
     private final ServicesRepository servicesRepository;
 
     @Transactional
-    public Payment createPayment(Long bookingId, PaymentRequest request) {
+    public PaymentResponse createPayment(Long bookingId, PaymentRequest request) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
-
-        if (booking.getPayment() != null) {
-            throw new IllegalStateException("Payment already exists for this booking");
-        }
 
         Payment payment = new Payment();
         payment.setAmount(request.getAmount());
@@ -51,59 +51,63 @@ public class PaymentService {
         booking.setPayment(savedPayment);
         bookingRepository.save(booking);
 
-        return savedPayment;
-    }
-    /**
-     * Tạo một Payment mới và tính tổng chi phí của các Service liên kết.
-     *
-     * @param bookingId ID của Booking liên kết.
-     * @param payment Payment thông tin cần tạo.
-     * @param serviceIds Danh sách ID của Service cần liên kết.
-     * @return Payment đã tạo với tổng chi phí.
-     */
-    public Payment createPaymentWithTotalCost(Long bookingId, Payment payment, List<Long> serviceIds) {
-        // Lấy Booking từ cơ sở dữ liệu dựa trên bookingId
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
+        PaymentResponse response = new PaymentResponse();
+        response.setBookingId(booking.getId());
+        response.setAmount(payment.getAmount());
+        response.setPaymentMethod(payment.getPaymentMethod());
+        response.setPaymentDate(payment.getPaymentDate());
 
-        // Lấy các Service từ cơ sở dữ liệu dựa trên danh sách serviceIds
-        List<Services> services = servicesRepository.findAllById(serviceIds);
-
-        // Tính tổng tiền từ danh sách Service
-        BigDecimal totalCost = services.stream()
-                .map(Services::getPrice)  // Lấy giá của từng Service
-                .reduce(BigDecimal.ZERO, BigDecimal::add);  // Tính tổng giá
-
-        // Cập nhật tổng chi phí vào Payment
-        payment.setAmount(totalCost);
-        payment.setBooking(booking);
-
-        // Lưu Payment vào cơ sở dữ liệu
-        return paymentRepository.save(payment);
+        return response;
     }
 
+//    public List<Payment> getAllPayment() {
+//        return paymentRepository.findAll();
+//    }
 
-    public List<Payment> getAllPayment() {
-        return paymentRepository.findAll();
+
+    public List<PaymentResponse> getAllPayment() {
+        List<Payment> payments = paymentRepository.findAll();  // Lấy toàn bộ danh sách
+        return payments.stream()
+                .sorted(Comparator.comparing(Payment::getPaymentDate).reversed())
+                .map(this::createPaymentResponse)
+                .collect(Collectors.toList());
+    }
+    public PaymentResponse getPaymentById(Long id) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("payment not found with id: " + id));
+
+        return createPaymentResponse(payment);
     }
 
-    public Payment getPayment(Long id) {
-        return paymentRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Payment not found"));
+    @Transactional
+    public PaymentResponse updatePayment(Long id, PaymentRequest request) {
+        Payment existingpayment = paymentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("payment not found with id: " + id));
+
+        existingpayment.setAmount(request.getAmount());
+        existingpayment.setPaymentDate(LocalDate.now());
+        existingpayment.setPaymentMethod(request.getPaymentMethod());
+        Payment updatedPayment = paymentRepository.save(existingpayment);
+        return createPaymentResponse(updatedPayment);
     }
-
-    public Payment updatePayment(Long id, PaymentRequest request) {
-        Payment payment = getPayment(id);
-        payment.setAmount(request.getAmount());
-        payment.setPaymentDate(LocalDate.now());
-        payment.setPaymentMethod(request.getPaymentMethod());
-
-        return paymentRepository.save(payment);
-    }
-
 
     public void deletePayment(Long id) {
         paymentRepository.deleteById(id);
+    }
+
+    private PaymentResponse createPaymentResponse(Payment payment) {
+        PaymentResponse response = new PaymentResponse();
+        if (payment.getBooking() != null) {
+            response.setBookingId(payment.getBooking().getId());
+        } else {
+            response.setBookingId(null);
+//            log.warn("Booking with ID {} has no associated user", booking.getId());
+        }
+        response.setId(payment.getId());
+        response.setPaymentDate(payment.getPaymentDate());
+        response.setPaymentMethod(payment.getPaymentMethod());
+        response.setAmount(payment.getAmount());
+        return response;
     }
 
 }
